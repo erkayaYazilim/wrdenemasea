@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kategori Ürünleri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    /* Sıfırlama */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    /* Üst Bar (50px sabit, arka plan resmi) */
+    .top-bar {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      color: #fff;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+    /* Hafif overlay */
+    .top-bar::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.35);
+      z-index: 0; 
+    }
+    .top-bar-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .back-button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .back-button i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+    .category-title {
+      font-size: 15px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
+
+    /* Ana İçerik */
+    .container {
+      padding: 10px 15px;
+      margin-top: 50px;
+      margin-bottom: 30px;
+    }
+
+    /* Ürün Listesi */
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Ürün Kartı */
+    .product-item {
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-top: 1px dashed #ccc;
+      cursor: pointer;
+    }
+    .product-item:first-child {
+      border-top: none;
+    }
+
+    /* Üst satır: Sol - resim+isim/fiyat, Sağ - Ekle butonu */
+    .product-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .left-info {
+      display: flex;
+      align-items: center;
+    }
+    .product-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .name-price {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .product-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 3px;
+      color: #000;
+    }
+    .product-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #d9534f;
+    }
+
+    /* Ekle Butonu */
+    .add-button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .add-button i {
+      font-size: 12px;
+    }
+    .add-button:hover {
+      background: #0056b3;
+    }
+
+    /* Alt satır: Açıklama ve meta bilgiler */
+    .product-bottom-row {
+      margin-top: 6px;
+    }
+    .product-desc {
+      font-size: 12.5px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    .meta-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .time-badge, .calorie-badge {
+      background: #f1f1f1;
+      border-radius: 20px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #333;
+      display: inline-flex;
+      align-items: center;
+    }
+    .time-badge i, .calorie-badge i {
+      margin-right: 3px;
+    }
+    .allergen-info {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Mobil */
+    @media(max-width: 600px) {
+      .product-top-row {
+        flex-wrap: wrap;
+      }
+      .left-info {
+        margin-bottom: 6px;
+      }
+      .add-button {
+        margin-top: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Üst Bar -->
+  <div class="top-bar" id="topBar">
+    <div class="top-bar-content">
+      <div class="back-button" onclick="history.back()">
+        <i class="fas fa-arrow-left"></i> 
+      </div>
+      <div class="category-title" id="categoryName">Kategori</div>
+    </div>
+  </div>
+
+  <!-- Ana İçerik -->
+  <div class="container">
+    <div class="product-list" id="productList"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    // URL'den cid al
+    function getCategoryId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('cid');
+    }
+
+    async function loadCategoryAndProducts(db, cid) {
+      const catRef = db.ref('Categories7/' + cid).once('value');
+      const prodRef = db.ref('Products7').orderByChild('categoryId').equalTo(cid).once('value');
+      const [catSnap, prodSnap] = await Promise.all([catRef, prodRef]);
+      return { catSnap, prodSnap };
+    }
+
+    window.onload = async function() {
+      // Firebase Config (Lütfen kendi bilgilerinizi ekleyin)
+      const firebaseConfig = {
+    apiKey: "AIzaSyA16M_6xOrUGEn9YCdzIFxBYXr-9ST7IWY",
+    authDomain: "qrmenuapplication-9b920.firebaseapp.com",
+    databaseURL: "https://qrmenuapplication-9b920-default-rtdb.firebaseio.com",
+    projectId: "qrmenuapplication-9b920",
+    storageBucket: "qrmenuapplication-9b920.appspot.com",
+    messagingSenderId: "1050979828232",
+    appId: "1:1050979828232:web:54d81e21056193bee147bd",
+    measurementId: "G-C3S611TREX"
+};
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      const cid = getCategoryId();
+      const categoryNameElem = document.getElementById('categoryName');
+      const productListElem = document.getElementById('productList');
+      const topBarElem = document.getElementById('topBar');
+
+      if (!cid) {
+        categoryNameElem.textContent = "Geçersiz kategori.";
+        return;
+      }
+
+      try {
+        const { catSnap, prodSnap } = await loadCategoryAndProducts(db, cid);
+
+        // Kategori bilgisi: ad ve arka plan resmi
+        if (catSnap.exists()) {
+          const catData = catSnap.val();
+          categoryNameElem.textContent = catData.name_tr || 'Kategori';
+          if (catData.imageUrl) {
+            topBarElem.style.backgroundImage = `url(${catData.imageUrl})`;
+            topBarElem.style.backgroundSize = 'cover';
+            topBarElem.style.backgroundPosition = 'center';
+            topBarElem.style.backgroundRepeat = 'no-repeat';
+          }
+        } else {
+          categoryNameElem.textContent = "Kategori bulunamadı.";
+        }
+
+        productListElem.innerHTML = '';
+        if (!prodSnap.exists()) {
+          productListElem.innerHTML = '<p>Bu kategoride ürün bulunamadı.</p>';
+          return;
+        }
+
+        prodSnap.forEach((snap) => {
+          const product = snap.val();
+
+          // Ürün kartı
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'product-item';
+          // Tüm kart tıklanırsa detay sayfasına yönlendir
+          itemDiv.onclick = () => {
+            window.location.href = `productDetail.html?pid=${snap.key}`;
+          };
+
+          // Üst satır: solda resim + ad/fiyat, sağda "Ekle" butonu
+          const topRow = document.createElement('div');
+          topRow.className = 'product-top-row';
+
+          const leftInfo = document.createElement('div');
+          leftInfo.className = 'left-info';
+
+          const img = document.createElement('img');
+          img.className = 'product-image';
+          img.src = product.imageUrl || '';
+          img.alt = product.name_tr || 'Ürün';
+
+          const namePriceDiv = document.createElement('div');
+          namePriceDiv.className = 'name-price';
+
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'product-title';
+          titleDiv.textContent = product.name_tr || 'Ürün Adı';
+
+          const priceDiv = document.createElement('div');
+          priceDiv.className = 'product-price';
+          priceDiv.textContent = (product.price || 0) + '₺';
+
+          namePriceDiv.appendChild(titleDiv);
+          namePriceDiv.appendChild(priceDiv);
+
+          leftInfo.appendChild(img);
+          leftInfo.appendChild(namePriceDiv);
+
+          // Ekle butonu: Tıklanınca detay sayfasına yönlendir (aynı yönlendirme)
+          const addBtn = document.createElement('button');
+          addBtn.className = 'add-button';
+          addBtn.innerHTML = `<i class="fas fa-plus"></i> Ekle`;
+          // "Ekle" butonuna tıklanınca da ürün detayına yönlendir
+          addBtn.onclick = (e) => {
+            e.stopPropagation();
+            window.location.href = `productDetail.html?pid=${snap.key}`;
+          };
+
+          topRow.appendChild(leftInfo);
+          topRow.appendChild(addBtn);
+
+          // Alt satır: Açıklama ve meta bilgiler
+          const bottomRow = document.createElement('div');
+          bottomRow.className = 'product-bottom-row';
+
+          if (product.description_tr) {
+            const descDiv = document.createElement('div');
+            descDiv.className = 'product-desc';
+            descDiv.textContent = product.description_tr;
+            bottomRow.appendChild(descDiv);
+          }
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'meta-info';
+
+          if (product.cookingTime) {
+            const timeBadge = document.createElement('div');
+            timeBadge.className = 'time-badge';
+            timeBadge.innerHTML = `<i class="fas fa-clock"></i> ${product.cookingTime} dk`;
+            metaDiv.appendChild(timeBadge);
+          }
+          if (product.calorie) {
+            const calBadge = document.createElement('div');
+            calBadge.className = 'calorie-badge';
+            calBadge.innerHTML = `<i class="fas fa-fire"></i> ${product.calorie} kcal`;
+            metaDiv.appendChild(calBadge);
+          }
+          if (product.allergen) {
+            const allergenInfo = document.createElement('div');
+            allergenInfo.className = 'allergen-info';
+            allergenInfo.textContent = 'Alerjen Bilgisi: ' + product.allergen;
+            metaDiv.appendChild(allergenInfo);
+          }
+          if (metaDiv.childNodes.length > 0) {
+            bottomRow.appendChild(metaDiv);
+          }
+
+          itemDiv.appendChild(topRow);
+          if (bottomRow.childNodes.length > 0) {
+            itemDiv.appendChild(bottomRow);
+          }
+
+          productListElem.appendChild(itemDiv);
+        });
+
+      } catch (err) {
+        console.error("Hata:", err);
+        categoryNameElem.textContent = "Bir hata oluştu.";
+      }
+    };
+  </script>
+</body>
+</html>

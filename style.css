@@ -1,0 +1,515 @@
+/************************************************
+ * GENEL SIFIRLAMA VE YAPI
+ ************************************************/
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #383545; /* Beyaz zemin */
+    color: #000000;           /* Siyah metin */
+    overflow-x: hidden;       /* Yatay scrollbar istemiyoruz */
+}
+
+/************************************************
+ * ANİMASYON TANIMLARI
+ ************************************************/
+/* Header açılırken yukarıdan aşağı süzülme */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Sosyal ikonlar soldan, dil butonları sağdan gelsin */
+@keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes fadeInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Kategori ve benzeri elemanlara hafif büyüyerek görünme efekti */
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    80% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Menü öğeleri, modal vb. yukarı doğru açılırken */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal arka planı açılırken */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/************************************************
+ * SABİT HEADER ALANI
+ ************************************************/
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px; /* Yüksekliği ihtiyaca göre ayarlayabilirsiniz */
+    /* Arka plan resminizin yolu */
+    background-size: auto;
+    background-color: #000000;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 1000;
+    animation: slideDown 1s ease forwards; /* Header yukarıdan iniyor */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* HEADER İÇERİSİNDEKİ LOGO VE METİN GİZLEME */
+/* Eğer logo ve metni göstermek istemiyorsanız, aşağıdaki satırları kullanmaya devam edin. Aksi halde kaldırın veya düzenleyin */
+.header-content .logo,
+.header-content .header-text {
+    display: none !important;
+}
+
+/************************************************
+ * SOSYAL İKONLAR
+ ************************************************/
+.social-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    animation: fadeInLeft 1.2s ease forwards; /* Soldan gelsin */
+}
+.social-icons a {
+    text-decoration: none;
+    color: #ffffff; /* Varsayılan siyah */
+    font-size: 1.5em;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.social-icons a:hover {
+    color: #c33d2e; /* Kırmızı */
+    transform: scale(1.2);
+}
+
+/************************************************
+ * DİL DEĞİŞTİRME BUTONLARI
+ ************************************************/
+.language-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    animation: fadeInRight 1.2s ease forwards; /* Sağdan gelsin */
+}
+.language-buttons button {
+    padding: 5px 10px;
+    background: #000000; /* Siyah */
+    color: #ffffff;      /* Beyaz */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+.language-buttons button:hover {
+    background: #c33d2e; /* Kırmızı */
+    transform: scale(1.1);
+}
+.language-buttons button:active {
+    background-color: #2e7d32; /* Yeşil */
+    transform: scale(1);
+}
+
+/************************************************
+ * MENÜ KONTEYNERİ
+ ************************************************/
+.menu-container {
+    max-width: 800px;
+    /* Header 300px + biraz boşluk = 320px veya isteğe göre */
+    margin: 20px auto 30px;
+    padding: 0 20px;
+}
+
+/************************************************
+ * ORTADAKİ YATAY RESİM
+ ************************************************/
+.horizontal-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 50px;
+    margin-left: 50px;
+   
+    animation: fadeInUp 1s ease forwards; /* Yumuşak bir görünüm efekti */
+}
+
+.horizontal-image-container img {
+    max-width: 100%;
+    height: 100px;
+   margin-right: 200px;
+   margin-left: 200px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.horizontal-image-container img:hover {
+    transform: scale(1.05);
+}
+
+/************************************************
+ * KATEGORİ BAŞLIKLARI, MENÜ ÖĞELERİ
+ ************************************************/
+/* Kategori kaplaması */
+.category-container {
+    margin-bottom: 5px;
+}
+
+/* Kategori başlığı */
+.category {
+    position: relative;
+    padding: 30px 10px;
+    color: #ffffff;
+    text-align: center;
+    background-color: #000000;  /* Varsayılan siyah arka plan */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    animation: popIn 0.8s ease forwards; /* popIn animasyonu */
+    transition: transform 0.3s ease;
+}
+.category h2 {
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+.category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4); /* Hafif karartma */
+    z-index: 1;
+    border-radius: 10px;
+}
+.category:hover {
+    transform: scale(1.05);
+}
+
+/* Menü öğeleri bölümü (tıklayınca açılan) */
+.menu-items {
+    display: none; /* JS ile açıyoruz */
+    background-color: #f5f5f5; /* Beyaza yakın gri */
+    border-radius: 0 0 10px 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInUp 0.5s forwards; /* Yukarı doğru fadeIn */
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #cccccc;
+    cursor: pointer; /* Tıklanabilir */
+    transition: background-color 0.3s ease;
+}
+.menu-item:hover {
+    background-color: #eeeeee;
+}
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+/* Ürün resmi */
+.menu-item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    margin-right: 15px;
+    object-fit: cover;
+    background-color: #ffffff;
+}
+
+/* Ürün başlık ve açıklama */
+.item-info {
+    flex: 1;
+}
+.item-info h3 {
+    font-size: 1.2em;
+    color: #000000;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+.item-info p {
+    font-size: 0.9em;
+    color: #333333;
+}
+
+/* Fiyat */
+.price {
+    font-weight: 900; /* Daha kalın */
+    font-size: 1.1em;
+    color: #ffd700; /* Altın rengi */
+    margin-left: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Beyaz arka plan üzerinde fark edilir */
+}
+
+
+
+/************************************************
+ * MODAL (ÜRÜN RESMİNİ BÜYÜTME)
+ ************************************************/
+.image-modal {
+    display: none; /* Açmak için JS ile ayarlanır */
+    position: fixed;
+    z-index: 1500;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    animation: fadeIn 0.5s ease forwards; /* Modal arka planı */
+}
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    animation: popIn 0.5s ease forwards; /* Resim popIn */
+}
+.close {
+    position: absolute;
+    top: 50px;
+    right: 35px;
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.close:hover {
+    color: #c33d2e; /* Kırmızı */
+    transform: scale(1.2);
+}
+
+/************************************************
+ * GOOGLE YORUM BUTONU
+ ************************************************/
+.google-review-button {
+    text-align: center;
+    margin: 30px 0;
+    animation: popIn 0.8s ease forwards; /* Buton popIn */
+}
+.btn-google-review {
+    display: inline-block;
+    background-color: #000000; /* Google kırmızısı */
+    color: #ffffff;
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.btn-google-review i {
+    margin-right: 8px;
+}
+.btn-google-review:hover {
+    background-color: #ffffff;
+    transform: scale(1.1);
+    color: #000000;
+}
+.btn-google-review:active {
+    transform: scale(1);
+}
+
+/************************************************
+ * MOBİL (MAX WIDTH: 600px)
+ ************************************************/
+@media screen and (max-width: 600px) {
+    .header {
+        height: 120px; /* Daha küçük header */
+    }
+    .menu-container {
+        margin: 5px auto 10px; /* Header 150px + boşluk */
+        padding: 0 10px;
+    }
+    .social-icons {
+        top: 10px;
+        left: 10px;
+    }
+    .language-buttons {
+        top: 10px;
+        right: 10px;
+    }
+    .horizontal-image-container {
+       
+        margin-right: 80px;
+        margin-left: 80px;
+    }
+    .horizontal-image-container img {
+        
+        height: auto;
+        width: 70%;
+   
+    }
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #fff;
+    color: #000;
+    /* Fixed header için üst boşluk */
+    padding-top: 100px;
+  }
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000;
+    z-index: 1000;
+    transition: height 0.3s ease, padding 0.3s ease;
+    height: 110px; /* Başlangıç yüksekliği */
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 40px; /* Yatay padding */
+  }
+  /* Sol: Logo – Sola sabit ve çerçeveli */
+  .header-left {
+    flex: 1;
+    text-align: left;
+    margin-left: 0dp; /* Sola hizalama */
+  }
+  .header-left .logo {
+    display: inline-block;  /* Blok düzende */
+    width: 30px;            /* Genişlik */
+    height: 30px;           /* Yükseklik */
+    border: 2px solid #fff; /* Beyaz çerçeve */
+    border-radius: 10px;    /* Köşeleri yuvarlat */
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  /* Ortada: Restoran İsmi & Slogan */
+  .header-center {
+    flex: 2;
+    text-align: center;
+    font-family: 'Playfair Display', serif; /* Şık yazı tipi */
+    color: #d4af37;  /* Altın rengi */
+    line-height: 1.2;
+  }
+  .restaurant-name {
+    font-size: 2em;
+    margin: 0;
+    transition: font-size 0.3s ease;
+  }
+  .restaurant-slogan {
+    font-size: 1em;
+    margin-top: 5px;
+    transition: font-size 0.3s ease;
+  }
+  /* Sağ: Sadece Dil Seçenekleri */
+  .header-right {
+    flex: 1;
+    text-align: right;
+  }
+  .language-buttons button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .language-buttons button:hover {
+    background: #fff;
+    color: #000;
+  }
+  
+  /* Header küçülme animasyonu (scroll olduğunda) */
+  .header.scrolled {
+    height: 60px; /* Düşük yüksekliğe geçiş */
+  }
+  .header.scrolled .logo {
+    width: 50px;
+    height: 50px;
+  }
+  .header.scrolled .restaurant-name {
+    font-size: 1.5em;
+  }
+  .header.scrolled .restaurant-slogan {
+    font-size: 0.8em;
+  }
+  
+  /* Örnek İçerik (Scroll oluşturmak için) */
+  .content {
+    padding: 20px;
+  }

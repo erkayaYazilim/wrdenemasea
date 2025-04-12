@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Lions Cafe - QR Menü</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Minify edilmiş Font Awesome (CDN üzerinden) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Dahili CSS -->
+  
+  <style>
+    /* Genel Ayarlar */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #ffffff;
+      color: #000000;
+      overflow-x: hidden;
+    }
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    /* Header - Fixed, GPU hızlandırması için will-change eklenmiştir */
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #fff;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 15px;
+      background-image: url("arka3lion.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100px;
+      transition: all 0.4s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
+      will-change: transform, opacity;
+    }
+    .header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: -1;
+    }
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: margin-left 0.4s ease;
+      margin-left: 15px;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      transition: all 0.4s ease;
+    }
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s ease;
+      color: #ffd700;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+    .header-text h1 {
+      font-size: 18px;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .header-text p {
+      font-size: 14px;
+      opacity: 1;
+      text-align: left;
+    }
+    /* Dil Seçim Dropdown */
+    .language-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .language-dropdown button {
+      background-color: #eee;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+    .language-dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 100px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 5px;
+    }
+    .language-dropdown-content a {
+      color: #333;
+      padding: 8px 12px;
+      text-decoration: none;
+      display: block;
+    }
+    .language-dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .language-dropdown.show .language-dropdown-content {
+      display: block;
+    }
+    .header.scrolled {
+      padding: 10px 15px;
+      min-height: 60px;
+    }
+    .header.scrolled .logo {
+      transform: scale(0);
+      opacity: 0;
+    }
+    .header.scrolled .logo-section {
+      margin-left: 0;
+    }
+    .header.scrolled .header-text {
+      transform: translateX(-10px);
+    }
+    /* Ana İçerik */
+    .main-content {
+      flex: 1;
+      margin-top: 110px;
+    }
+    /* Arama Alanı */
+    #searchContainer {
+      padding: 10px;
+      background-color: #fff;
+    }
+    #searchContainer input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 20px;
+    }
+    /* Arama Sonuçları */
+    #searchResults {
+      padding: 10px 20px;
+      background-color: #fff;
+    }
+    /* Footer */
+    .footer {
+      background-color: #e6edf9;
+      color: #000000;
+      text-align: center;
+      padding: 20px;
+    }
+    .footer .review-buttons {
+      margin-bottom: 10px;
+    }
+    .footer .review-buttons a {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 10px 15px;
+      background-color: #000;
+      color: #fff;
+      font-size: 0.9em;
+      font-weight: bold;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+    .footer .review-buttons a:hover {
+      background-color: #444;
+    }
+    .footer p {
+      margin: 5px 0 0;
+      font-size: 0.9em;
+    }
+    .footer p strong {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header -->
+    <header class="header" id="header">
+      <div class="logo-section">
+        <img src="logolion.png" alt="Restoran Logosu" class="logo" loading="lazy">
+        <div class="header-text">
+          <h1 id="restaurantName">Lions Cafe Lounge</h1>
+          <p id="restaurantTagline">Günün En Güzel Anı</p>
+        </div>
+      </div>
+      <!-- Dil Seçim -->
+      <div class="language-dropdown" id="languageDropdown">
+        <button id="languageButton">Türkçe</button>
+        <div class="language-dropdown-content">
+          <a href="#" onclick="changeLanguage('tr')">Türkçe</a>
+          <a href="#" onclick="changeLanguage('en')">English</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Arama Alanı -->
+      <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Menüde ara...">
+      </div>
+      <!-- Arama Sonuçları -->
+      <div id="searchResults"></div>
+      <!-- Menü Kategorileri ve Ürünler -->
+      <div class="menu-container" id="menuContent"></div>
+      <!-- Ürün Resmi Modal -->
+      <div id="imageModal" class="image-modal">
+        <span id="modalClose" class="close">&times;</span>
+        <img id="modalImage" class="modal-content" src="" alt="Ürün Resmi" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="review-buttons">
+        <a href="#" target="_blank" id="googleReviewLink">
+          <i class="fab fa-google"></i> Google Yorum
+        </a>
+        <a href="#" target="_blank">
+          <i class="fab fa-instagram"></i> Instagram
+        </a>
+      </div>
+      <p id="footerText">QrMenu bir <strong>ERKAYASOFT</strong> hizmetidir</p>
+    </footer>
+  </div>
+
+  <!-- Firebase SDK'lar -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+  <!-- Menü (Ana) JavaScript -->
+  <script>
+    window.onload = function() {
+      // Firebase Config
+      const firebaseConfig = {
+    apiKey: "AIzaSyA16M_6xOrUGEn9YCdzIFxBYXr-9ST7IWY",
+    authDomain: "qrmenuapplication-9b920.firebaseapp.com",
+    databaseURL: "https://qrmenuapplication-9b920-default-rtdb.firebaseio.com",
+    projectId: "qrmenuapplication-9b920",
+    storageBucket: "qrmenuapplication-9b920.appspot.com",
+    messagingSenderId: "1050979828232",
+    appId: "1:1050979828232:web:54d81e21056193bee147bd",
+    measurementId: "G-C3S611TREX"
+};
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      let selectedLanguage = localStorage.getItem('selectedLanguage') || 'tr';
+      let allProducts = [];
+      const menuContent = document.getElementById('menuContent');
+      const searchResults = document.getElementById('searchResults');
+
+      // Dil seçimi
+      const langBtn = document.getElementById('languageButton');
+      langBtn.addEventListener('click', () => {
+        document.getElementById('languageDropdown').classList.toggle('show');
+      });
+      window.changeLanguage = function(lang) {
+        selectedLanguage = lang;
+        localStorage.setItem('selectedLanguage', lang);
+        document.getElementById('languageButton').innerText = (lang === 'tr') ? 'Türkçe' : 'English';
+        loadHeaderText();
+        loadFooterText();
+        fetchCategoriesAndProducts();
+        document.getElementById('languageDropdown').classList.remove('show');
+      };
+
+      // Metinleri yükle
+      function loadHeaderText() {
+        // (İsteğe bağlı) veritabanında Languages/headerTexts alıp set edebilirsiniz
+        // Örnek statik:
+        if (selectedLanguage === 'tr') {
+          document.getElementById('restaurantName').textContent = "Lions Cafe Lounge";
+          document.getElementById('restaurantTagline').textContent = "Günün En Güzel Anı";
+          document.getElementById('searchInput').placeholder = "Menüde ara...";
+        } else {
+          document.getElementById('restaurantName').textContent = "Lions Cafe Lounge";
+          document.getElementById('restaurantTagline').textContent = "The Best Moment of the Day";
+          document.getElementById('searchInput').placeholder = "Search menu...";
+        }
+      }
+      function loadFooterText() {
+        const footerText = document.getElementById('footerText');
+        const googleReviewLink = document.getElementById('googleReviewLink');
+        if (selectedLanguage === 'tr') {
+          footerText.innerHTML = 'QrMenu bir <strong>ERKAYASOFT</strong> hizmetidir';
+          googleReviewLink.innerHTML = '<i class="fab fa-google"></i> Google Yorum';
+        } else {
+          footerText.innerHTML = 'QrMenu is a service of <strong>ERKAYASOFT</strong>';
+          googleReviewLink.innerHTML = '<i class="fab fa-google"></i> Google Review';
+        }
+      }
+      loadHeaderText();
+      loadFooterText();
+
+      // Kategori & Ürünleri çek
+      async function fetchCategoriesAndProducts() {
+        menuContent.innerHTML = '';
+        searchResults.innerHTML = '';
+        allProducts = [];
+        try {
+          const [catSnap, prodSnap] = await Promise.all([
+            db.ref('Categories7').orderByChild('order').once('value'),
+            db.ref('Products7').once('value')
+          ]);
+          const categoriesData = catSnap.val() || {};
+          const productsData = prodSnap.val() || {};
+
+          // Kategorileri obje => {id, info, products:[]}
+          let catMap = {};
+          for (let cId in categoriesData) {
+            const cVal = categoriesData[cId];
+            if (!catMap[cId]) {
+              catMap[cId] = {
+                info: { ...cVal, id: cId },
+                products: []
+              };
+            }
+          }
+          // Ürünleri ilgili kategoriye yerleştir
+          for (let pId in productsData) {
+            const pVal = productsData[pId];
+            allProducts.push({ ...pVal, _id: pId });
+            if (catMap[pVal.categoryId]) {
+              catMap[pVal.categoryId].products.push({ ...pVal, _id: pId });
+            }
+          }
+          // catMap'i order'a göre sırala
+          const sortedCats = Object.values(catMap).sort((a, b) => (a.info.order || 0) - (b.info.order || 0));
+          // Ekrana bas
+          sortedCats.forEach(cat => {
+            // Yalnızca aktif kategorileri göster
+            if (cat.info.status !== 'active') return;
+            createCategoryBlock(cat.info, cat.products);
+          });
+        } catch(err) {
+          console.error('Veri çekme hatası:', err);
+        }
+      }
+
+      function createCategoryBlock(catInfo, products) {
+        const catDiv = document.createElement('div');
+        catDiv.classList.add('category-container');
+
+        const catTitleDiv = document.createElement('div');
+        catTitleDiv.classList.add('category');
+        catTitleDiv.style.backgroundImage = `url(${catInfo.imageUrl || ''})`;
+        const catTitleH2 = document.createElement('h2');
+        catTitleH2.textContent = (selectedLanguage === 'tr') ? (catInfo.name_tr || 'Kategori') : (catInfo.name_en || 'Category');
+        catTitleDiv.appendChild(catTitleH2);
+
+        // Menü items container
+        const itemsDiv = document.createElement('div');
+        itemsDiv.classList.add('menu-items');
+        itemsDiv.id = catInfo.id;
+
+        products.forEach(prod => {
+          if (!prod) return;
+          // item
+          const itemDiv = document.createElement('div');
+          itemDiv.classList.add('menu-item');
+
+          const img = document.createElement('img');
+          img.src = prod.imageUrl || '';
+          img.alt = prod.name_tr || 'Ürün';
+          img.loading = 'lazy';
+          img.onclick = () => {
+            // Detay sayfasına gidelim
+            window.location.href = `productDetail.html?pid=${prod._id}`;
+          };
+          const infoDiv = document.createElement('div');
+          infoDiv.classList.add('item-info');
+
+          const h3 = document.createElement('h3');
+          h3.textContent = (selectedLanguage === 'tr') ? (prod.name_tr || 'Ürün') : (prod.name_en || 'Product');
+          const p = document.createElement('p');
+          p.textContent = (selectedLanguage === 'tr') ? (prod.description_tr || '') : (prod.description_en || '');
+
+          infoDiv.appendChild(h3);
+          infoDiv.appendChild(p);
+
+          const priceSpan = document.createElement('span');
+          priceSpan.classList.add('price');
+          priceSpan.textContent = '₺' + (prod.price || 0);
+
+          itemDiv.appendChild(img);
+          itemDiv.appendChild(infoDiv);
+          itemDiv.appendChild(priceSpan);
+
+          itemsDiv.appendChild(itemDiv);
+        });
+
+        catTitleDiv.onclick = () => {
+          itemsDiv.style.display = (itemsDiv.style.display === 'block') ? 'none' : 'block';
+        };
+
+        catDiv.appendChild(catTitleDiv);
+        catDiv.appendChild(itemsDiv);
+        menuContent.appendChild(catDiv);
+      }
+
+      // Ürün resmi modal
+      const imageModal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      const modalClose = document.getElementById('modalClose');
+      window.openImageModal = function(url, alt) {
+        imageModal.style.display = 'block';
+        modalImg.src = url;
+        modalImg.alt = alt || '';
+      };
+      modalClose.onclick = function() {
+        imageModal.style.display = 'none';
+      };
+      window.onclick = function(e) {
+        if (e.target === imageModal) {
+          imageModal.style.display = 'none';
+        }
+      };
+
+      // Arama
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) {
+          searchResults.innerHTML = '';
+          menuContent.style.display = 'block';
+          return;
+        }
+        menuContent.style.display = 'none';
+        let filtered = allProducts.filter(p => {
+          const nm = (selectedLanguage === 'tr') ? (p.name_tr || '') : (p.name_en || '');
+          return nm.toLowerCase().includes(query);
+        });
+        if (filtered.length === 0) {
+          searchResults.innerHTML = '<p>Aradığınız ürün bulunamadı.</p>';
+        } else {
+          let html = '';
+          filtered.forEach(p => {
+            const nm = (selectedLanguage === 'tr') ? p.name_tr : p.name_en;
+            const desc = (selectedLanguage === 'tr') ? p.description_tr : p.description_en;
+            html += `
+              <div class="menu-item" style="cursor:pointer;" onclick="window.location='productDetail.html?pid=${p._id}'">
+                <img src="${p.imageUrl || ''}" alt="${nm || ''}" loading="lazy"/>
+                <div class="item-info">
+                  <h3>${nm || ''}</h3>
+                  <p>${desc || ''}</p>
+                </div>
+                <span class="price">₺${p.price || 0}</span>
+              </div>
+            `;
+          });
+          searchResults.innerHTML = html;
+        }
+      });
+
+      // Scroll header
+      window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+
+      // İlk yük
+      fetchCategoriesAndProducts();
+    };
+  </script>
+</body>
+</html>

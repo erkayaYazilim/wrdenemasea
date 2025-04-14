@@ -451,7 +451,7 @@
   <div class="wifi-modal" id="wifiModal">
     <div class="wifi-modal-content">
       <button class="wifi-close-btn" id="wifiCloseBtn">&times;</button>
-      <h2>WiFi Şifresi</h2>
+      <h2>UYARI!</h2>
       <p id="wifiPasswordText"></p>
     </div>
   </div>
@@ -568,6 +568,56 @@ function copyToClipboard(text) {
     document.body.removeChild(textArea);
   }
 }
+// Örnek: Global değişken (firma WhatsApp hattı) zaten tanımlanmış olmalı. 
+// Eğer tanımlı değilse, aşağıdaki gibi bir yedek değer kullanabilirsiniz.
+// let companyWhatsapp = "+905xxxxxxxxx";
+
+function getMasaNo() {
+  // Masa numarası sessionStorage veya localStorage'dan çekilir.
+  let masaNo = sessionStorage.getItem("masa");
+  if (!masaNo) {
+    masaNo = localStorage.getItem("masa");
+  }
+  return masaNo;
+}
+
+function sendWhatsAppMessage(requestType) {
+  const masaNo = getMasaNo();
+  if (!masaNo) {
+    // Masa numarası yoksa, modal dialog'da uyarıyı göster
+    document.getElementById("wifiPasswordText").textContent = "Lütfen masadan QR kod okutunuz";
+    document.getElementById("wifiModal").style.display = "block";
+    return;
+  }
+  
+  if (!companyWhatsapp) {
+    alert("Şu anda WhatsApp hattı bilgisi mevcut değil. Lütfen daha sonra tekrar deneyiniz.");
+    return;
+  }
+  
+  // İstek türüne göre mesaj belirle
+  let message = "";
+  if (requestType === "waiter") {
+    message = "MASA " + masaNo + " - Garson çağırıyorum.";
+  } else if (requestType === "bill") {
+    message = "MASA " + masaNo + " - Hesap rica ediyorum.";
+  }
+  
+  // Şirket WhatsApp numarasındaki '+' karakterini temizleyip URL oluşturuyoruz.
+  const phone = companyWhatsapp.replace("+", "");
+  const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+  
+  // Yeni sekmede WhatsApp'a yönlendirme
+  window.open(whatsappUrl, "_blank");
+}
+
+// Butonlara tıklama olaylarını bağla
+document.querySelector(".waiter-btn").addEventListener("click", function() {
+  sendWhatsAppMessage("waiter");
+});
+document.querySelector(".bill-btn").addEventListener("click", function() {
+  sendWhatsAppMessage("bill");
+});
 
       // Kategoriler (sadece aktif olanlar)
       function fetchCategories() {

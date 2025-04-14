@@ -310,6 +310,11 @@
         message += `\n   Miktar: ${item.quantity}\n   Fiyat: ₺${variantPrice}\n   Ara Toplam: ₺${subTotal.toFixed(2)}\n\n`;
       });
       message += `Genel Toplam: ₺${total.toFixed(2)}\n\n`;
+      // SessionStorage'dan masa bilgisini al ve sipariş mesajına ekle.
+      const masaNo = sessionStorage.getItem('masa');
+      if (masaNo) {
+        message += "MASA " + masaNo + " DEN sipariş veriyorum.\n\n";
+      }
       const now = new Date();
       message += "Sipariş Tarihi: " + now.toLocaleString() + "\n\n";
       message += "Siparişiniz İçin Teşekkür Ederiz.";

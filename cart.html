@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Sepet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Font Awesome (ikonlar için) -->
+  <!-- Font Awesome (ikonler için) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <!-- Google Fonts (Montserrat) -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
@@ -171,9 +171,56 @@
         font-size: 14px;
       }
     }
+    /* Modal Dialog Stilleri */
+    .modal {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0,0,0,0.5);
+      padding: 20px;
+      z-index: 10000;
+      transition: top 0.5s ease;
+    }
+    .modal.show {
+      top: 0;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .modal-content p {
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+    .modal-content button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .modal-content button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
+  <!-- Modal Dialog -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <p>Lütfen masalardan QR kod okutunuz.</p>
+      <button id="closeModalButton">Tamam</button>
+    </div>
+  </div>
+
   <!-- Toolbar -->
   <div class="toolbar">
     <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Geri</button>
@@ -199,9 +246,7 @@
   <!-- Firebase SDK'ları -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <!-- Eğer Storage veya Auth kullanılacaksa ekleyin, fakat bu sayfada sepet işlemleri için Database yeterli olabilir. -->
-  <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script> -->
+  <!-- (Opsiyonel) Firebase Storage veya Auth kullanacaksanız ekleyin -->
 
   <script>
     // Firebase yapılandırması
@@ -295,6 +340,15 @@
       window.location.href = "menu.html";
     }
 
+    // Yardımcı: Masa numarasını çekmek
+    function getMasaNo() {
+      let masaNo = sessionStorage.getItem('masa');
+      if (!masaNo) {
+        masaNo = localStorage.getItem('masa');
+      }
+      return masaNo;
+    }
+
     // Sipariş mesajını oluşturacak fonksiyon
     function getOrderMessage() {
       let message = "Sipariş Detayları:\n\n";
@@ -310,14 +364,17 @@
         message += `\n   Miktar: ${item.quantity}\n   Fiyat: ₺${variantPrice}\n   Ara Toplam: ₺${subTotal.toFixed(2)}\n\n`;
       });
       message += `Genel Toplam: ₺${total.toFixed(2)}\n\n`;
-      // SessionStorage'dan masa bilgisini al ve sipariş mesajına ekle.
-      const masaNo = sessionStorage.getItem('masa');
+      
+      // Masa numarasını ekleyelim
+      const masaNo = getMasaNo();
       if (masaNo) {
         message += "MASA " + masaNo + " DEN sipariş veriyorum.\n\n";
       }
+      
       const now = new Date();
       message += "Sipariş Tarihi: " + now.toLocaleString() + "\n\n";
       message += "Siparişiniz İçin Teşekkür Ederiz.";
+      
       return message;
     }
 
@@ -351,10 +408,23 @@
       });
     }
 
-    // Sayfa yüklendiğinde sepet ve firma bilgilerini yükleyelim.
+    // Modal gösterimi: Eğer masa numarası belirlenemiyorsa, modalı göster.
+    function checkMasa() {
+      if (!getMasaNo()) {
+        document.getElementById("modal").classList.add("show");
+      }
+    }
+
+    // Modal Kapatma Butonu
+    document.getElementById("closeModalButton").addEventListener("click", function() {
+      document.getElementById("modal").classList.remove("show");
+    });
+
+    // Sayfa yüklendiğinde sepet, firma bilgileri ve masa kontrolü yapılır.
     window.onload = function() {
       loadCart();
       loadCompanyInfo();
+      checkMasa();
     };
   </script>
 </body>

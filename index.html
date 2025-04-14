@@ -2,8 +2,13 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <title>Sinan Usta-Hoş Geldiniz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lions Cafe Lounge - Welcome</title>
+  
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  
   <style>
     /* Genel sıfırlama */
     * {
@@ -11,50 +16,47 @@
       margin: 0;
       padding: 0;
     }
+    
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       background-color: #383545; /* Koyu arka plan */
       color: #fff;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
+      padding: 20px;
     }
-    /* Dil butonu (sağ üst) */
-    .lang-button {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: #fff;
-      color: #333;
-      border: none;
-      padding: 8px 16px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      transition: background-color 0.3s;
-    }
-    .lang-button:hover {
-      background-color: #ddd;
-    }
-    /* İçerik kapsayıcı */
+    
+    /* Ana içerik kapsayıcısı */
     .container {
       text-align: center;
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
     }
+    
+    /* Logoyu yatay göstermeye uygun hale getiriyoruz */
     .logo-container {
-      width: 150px;
-      height: 150px;
+      max-width: 100%;
       margin: 0 auto 20px;
     }
     .logo-container img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto; /* Orijinal en-boy oranı korunur, kırpma olmaz */
+      object-fit: contain; /* Resmin tamamı görünür, gerekiyorsa boşluklar oluşur */
+      border-radius: 10px;
+      background-color: #ddd;
+      border: 1px solid #ddd;
+      padding: 5px;
+      transition: all 0.4s ease;
     }
+    
+    /* Başlıklar, alt başlık ve hoş geldiniz mesajı */
     #main-title {
       font-size: 2rem;
       margin-bottom: 10px;
+      color: #e53e3e; /* Kırmızı ton */
     }
     #sub-title {
       font-size: 1.3rem;
@@ -64,7 +66,10 @@
     }
     #welcome-text {
       margin-bottom: 20px;
+      font-size: 1.1rem;
     }
+    
+    /* Menü butonu */
     .menu-button {
       background-color: #e53e3e;
       color: #fff;
@@ -78,60 +83,37 @@
     .menu-button:hover {
       background-color: #c53030;
     }
+    
+    /* Responsive ayarlar */
+    @media (max-width: 480px) {
+      #main-title {
+        font-size: 1.8rem;
+      }
+      #sub-title {
+        font-size: 1.2rem;
+      }
+      .menu-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Dil değiştirme butonu -->
-  <button id="lang-btn" class="lang-button">English</button>
-  
   <div class="container">
     <!-- Logo alanı -->
     <div class="logo-container">
-      <img src="logolion.png" alt="Örnek Restoran Logo">
+      <img src="sinanusta.png" alt="Restoran Logosu">
     </div>
-    <h1 id="main-title">Lions Cafe Lounge</h1>
-    <h2 id="sub-title">Günün En Güzel Anı</h2>
-    <p id="welcome-text">Hoşgeldiniz</p>
+    <h1 id="main-title">SİNAN USTA</h1>
+    <h2 id="sub-title">Sarıyer Börekcisi</h2>
+    <p id="welcome-text">Hoş geldiniz</p>
     <button id="menu-btn" class="menu-button">Menüye Git</button>
   </div>
-
+  
   <script>
-    const langBtn = document.getElementById("lang-btn");
-    const mainTitle = document.getElementById("main-title");
-    const subTitle = document.getElementById("sub-title");
-    const welcomeText = document.getElementById("welcome-text");
-    const menuBtn = document.getElementById("menu-btn");
-
-    // Varsayılan veya daha önce seçilmiş dili localStorage’den alıyoruz (varsayılan 'tr')
-    let currentLang = localStorage.getItem('selectedLanguage') || 'tr';
-
-    // Seçili dile göre metinleri güncelleyen fonksiyon
-    function updateLanguageTexts(lang) {
-      if (lang === 'en') {
-        mainTitle.textContent = "Lions Cafe Lounge";
-        subTitle.textContent = "The Best Moment of the Day";
-        welcomeText.textContent = "Welcome";
-        menuBtn.textContent = "Go to Menu";
-        langBtn.textContent = "Türkçe";
-      } else {
-        mainTitle.textContent = "Lions Cafe Lounge";
-        subTitle.textContent = "Günün En Güzel Anı";
-        welcomeText.textContent = "Hoşgeldiniz";
-        menuBtn.textContent = "Menüye Git";
-        langBtn.textContent = "English";
-      }
-    }
-    updateLanguageTexts(currentLang);
-
-    // Dil butonuna tıklanınca dili değiştirip localStorage'ye kaydediyoruz
-    langBtn.addEventListener("click", () => {
-      currentLang = (currentLang === "tr") ? "en" : "tr";
-      localStorage.setItem('selectedLanguage', currentLang);
-      updateLanguageTexts(currentLang);
-    });
-
-    // "Menüye Git" butonuna tıklanınca index.html sayfasına yönlendiriyoruz
-    menuBtn.addEventListener("click", () => {
+    // "Menüye Git" butonuna tıklayınca menu.html sayfasına yönlendirir.
+    document.getElementById("menu-btn").addEventListener("click", function() {
       window.location.href = "menu.html";
     });
   </script>

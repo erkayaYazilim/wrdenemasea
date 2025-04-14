@@ -4,38 +4,82 @@
   <meta charset="UTF-8">
   <title>Sepet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome (ikonlar için) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts (Montserrat) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* Genel Sıfırlama */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Montserrat', sans-serif;
-      margin: 0; padding: 0;
-      background-color: #f9f9f9;
+      background-color: #f4f6f9;
       color: #333;
+      overflow-x: hidden;
     }
+    /* Toolbar (Header) */
+    .toolbar {
+      background-color: #fff;
+      padding: 10px 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toolbar button {
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s ease;
+    }
+    .toolbar button:hover {
+      color: #007bff;
+    }
+    .toolbar .title {
+      flex: 1;
+      text-align: center;
+      font-size: 24px;
+      color: red;
+      font-weight: bold;
+    }
+    .toolbar .spacer {
+      width: 50px;
+    }
+    /* Sepet Container */
     .container {
       max-width: 600px;
-      margin: 30px auto;
+      margin: 20px auto 30px;
       padding: 20px;
       background-color: #fff;
       border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    h1 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .cart-item {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
     .cart-item img {
-      width: 60px; height: 60px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
       margin-right: 10px;
       border-radius: 5px;
+      border: 1px solid #ddd;
     }
     .cart-details {
       flex: 1;
@@ -43,6 +87,7 @@
     .cart-details h3 {
       margin: 0;
       font-size: 16px;
+      color: #007bff;
     }
     .cart-details p {
       margin: 3px 0;
@@ -57,15 +102,19 @@
       width: 50px;
       text-align: center;
       font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px;
     }
     .remove-btn {
       background-color: #dc3545;
       color: #fff;
-      border: none; 
+      border: none;
       border-radius: 4px;
       padding: 5px 10px;
       cursor: pointer;
       font-size: 14px;
+      transition: background-color 0.3s;
     }
     .remove-btn:hover {
       background-color: #c82333;
@@ -73,10 +122,9 @@
     .cart-summary {
       text-align: right;
       margin-top: 20px;
-    }
-    .cart-summary p {
-      margin: 5px 0;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #007bff;
     }
     .nav-links {
       text-align: center;
@@ -87,99 +135,222 @@
       text-decoration: none;
       color: #007bff;
       font-weight: bold;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: #0056b3;
+    }
+    .whatsapp-order-btn {
+      display: block;
+      width: 100%;
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .whatsapp-order-btn i {
+      margin-right: 8px;
+    }
+    .whatsapp-order-btn:hover {
+      background-color: #1ebe57;
+    }
+    /* Responsive Tasarım */
+    @media (max-width: 600px) {
+      .toolbar .title {
+        font-size: 20px;
+      }
+      .toolbar button {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Sepetiniz</h1>
-  <div id="cartItems"></div>
-  <div class="cart-summary" id="cartSummary"></div>
-  <div class="nav-links">
-    <a href="menu.html">Menüye Dön</a>
-    <a href="#" onclick="clearCart()">Sepeti Boşalt</a>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Geri</button>
+    <div class="title">Sepet</div>
+    <div class="spacer"></div>
   </div>
-</div>
 
-<script>
-  let cart = [];
-  function loadCart() {
-    cart = JSON.parse(localStorage.getItem('cart')) || [];
-    renderCart();
-  }
-  function renderCart() {
-    const cartItemsDiv = document.getElementById('cartItems');
-    cartItemsDiv.innerHTML = '';
-    if(cart.length === 0) {
-      cartItemsDiv.innerHTML = '<p>Sepetiniz boş.</p>';
-      document.getElementById('cartSummary').innerHTML = '';
-      return;
-    }
+  <!-- Sepet İçeriği -->
+  <div class="container">
+    <div id="cartItems"></div>
+    <div class="cart-summary" id="cartSummary"></div>
+    <!-- WhatsApp Sipariş Butonu -->
+    <a href="javascript:void(0)" id="whatsappOrderBtn" class="whatsapp-order-btn">
+      <i class="fab fa-whatsapp"></i> WhatsApp ile Sipariş Ver
+    </a>
+    <!-- Navigasyon Linkleri -->
+    <div class="nav-links">
+      <a href="menu.html">Menüye Dön</a>
+      <a href="#" onclick="clearCart()">Sepeti Boşalt</a>
+    </div>
+  </div>
 
-    let total = 0;
-    cart.forEach((item, index) => {
-      const variantPrice = item.variantPrice || 0;
-      const subTotal = variantPrice * item.quantity;
-      total += subTotal;
+  <!-- Firebase SDK'ları -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <!-- Eğer Storage veya Auth kullanılacaksa ekleyin, fakat bu sayfada sepet işlemleri için Database yeterli olabilir. -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script> -->
 
-      // Eleman oluştur
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('cart-item');
-      itemDiv.innerHTML = `
-        <img src="${item.imageUrl}" alt="${item.name}"/>
-        <div class="cart-details">
-          <h3>${item.name}</h3>
-          <p>${item.variantName ? (item.variantName + " - ₺" + variantPrice) : ("Fiyat: ₺" + variantPrice)}</p>
-        </div>
-      `;
-      // Aksiyonlar
-      const actionsDiv = document.createElement('div');
-      actionsDiv.classList.add('cart-actions');
-      // Quantity input
-      const qtyInput = document.createElement('input');
-      qtyInput.type = 'number';
-      qtyInput.value = item.quantity;
-      qtyInput.min = '1';
-      qtyInput.onchange = () => updateQuantity(index, parseInt(qtyInput.value));
+  <script>
+    // Firebase yapılandırması
+    const firebaseConfig = {
+      apiKey: "AIzaSyA16M_6xOrUGEn9YCdzIFxBYXr-9ST7IWY",
+      authDomain: "qrmenuapplication-9b920.firebaseapp.com",
+      databaseURL: "https://qrmenuapplication-9b920-default-rtdb.firebaseio.com",
+      projectId: "qrmenuapplication-9b920",
+      storageBucket: "qrmenuapplication-9b920.appspot.com",
+      messagingSenderId: "1050979828232",
+      appId: "1:1050979828232:web:54d81e21056193bee147bd",
+      measurementId: "G-C3S611TREX"
+    };
+    // Firebase initialize edilmelidir
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-      // Remove button
-      const removeBtn = document.createElement('button');
-      removeBtn.classList.add('remove-btn');
-      removeBtn.textContent = 'Sil';
-      removeBtn.onclick = () => removeItem(index);
+    // Sepet İşlemleri
+    let cart = [];
+    // Firma bilgilerini tutacak global değişken (WhatsApp sipariş hattı, +90 formatında)
+    let companyWhatsapp = ""; 
 
-      actionsDiv.appendChild(qtyInput);
-      actionsDiv.appendChild(removeBtn);
-
-      itemDiv.appendChild(actionsDiv);
-      cartItemsDiv.appendChild(itemDiv);
-    });
-
-    document.getElementById('cartSummary').innerHTML = `
-      <p><strong>Toplam:</strong> ₺${total.toFixed(2)}</p>
-    `;
-  }
-
-  function updateQuantity(idx, newQty) {
-    if(newQty < 1) newQty = 1;
-    cart[idx].quantity = newQty;
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart();
-  }
-  function removeItem(idx) {
-    cart.splice(idx, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart();
-  }
-  function clearCart() {
-    if(confirm("Sepeti tamamen boşaltmak istiyor musunuz?")) {
-      cart = [];
-      localStorage.removeItem('cart');
+    function loadCart() {
+      cart = JSON.parse(localStorage.getItem('cart')) || [];
       renderCart();
     }
-  }
 
-  window.onload = loadCart;
-</script>
+    function renderCart() {
+      const cartItemsDiv = document.getElementById('cartItems');
+      cartItemsDiv.innerHTML = '';
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<p>Sepetiniz boş.</p>';
+        document.getElementById('cartSummary').innerHTML = '';
+        return;
+      }
+      let total = 0;
+      cart.forEach((item, index) => {
+        const variantPrice = item.variantPrice || 0;
+        const subTotal = variantPrice * item.quantity;
+        total += subTotal;
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('cart-item');
+        itemDiv.innerHTML = `
+          <img src="${item.imageUrl}" alt="${item.name}">
+          <div class="cart-details">
+            <h3>${item.name}</h3>
+            <p>${item.variantName ? (item.variantName + " - ₺" + variantPrice) : ("Fiyat: ₺" + variantPrice)}</p>
+          </div>
+        `;
+        const actionsDiv = document.createElement('div');
+        actionsDiv.classList.add('cart-actions');
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.value = item.quantity;
+        qtyInput.min = '1';
+        qtyInput.onchange = () => updateQuantity(index, parseInt(qtyInput.value));
+        const removeBtn = document.createElement('button');
+        removeBtn.classList.add('remove-btn');
+        removeBtn.textContent = 'Sil';
+        removeBtn.onclick = () => removeItem(index);
+        actionsDiv.appendChild(qtyInput);
+        actionsDiv.appendChild(removeBtn);
+        itemDiv.appendChild(actionsDiv);
+        cartItemsDiv.appendChild(itemDiv);
+      });
+      document.getElementById('cartSummary').innerHTML = `<p><strong>Toplam: ₺${total.toFixed(2)}</strong></p>`;
+    }
+
+    function updateQuantity(idx, newQty) {
+      if (newQty < 1) newQty = 1;
+      cart[idx].quantity = newQty;
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(idx) {
+      cart.splice(idx, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function clearCart() {
+      if (confirm("Sepeti tamamen boşaltmak istiyor musunuz?")) {
+        cart = [];
+        localStorage.removeItem('cart');
+        renderCart();
+      }
+    }
+
+    function goBack() {
+      window.location.href = "menu.html";
+    }
+
+    // Sipariş mesajını oluşturacak fonksiyon
+    function getOrderMessage() {
+      let message = "Sipariş Detayları:\n\n";
+      let total = 0;
+      cart.forEach((item, index) => {
+        const variantPrice = item.variantPrice || 0;
+        const subTotal = variantPrice * item.quantity;
+        total += subTotal;
+        message += `${index + 1}. ${item.name}`;
+        if (item.variantName) {
+          message += ` (${item.variantName})`;
+        }
+        message += `\n   Miktar: ${item.quantity}\n   Fiyat: ₺${variantPrice}\n   Ara Toplam: ₺${subTotal.toFixed(2)}\n\n`;
+      });
+      message += `Genel Toplam: ₺${total.toFixed(2)}\n\n`;
+      const now = new Date();
+      message += "Sipariş Tarihi: " + now.toLocaleString() + "\n\n";
+      message += "Siparişiniz İçin Teşekkür Ederiz.";
+      return message;
+    }
+
+    // WhatsApp Sipariş Butonu Olayı
+    document.getElementById("whatsappOrderBtn").addEventListener("click", function() {
+      if (cart.length === 0) {
+        alert("Sepetiniz boş.");
+        return;
+      }
+      if (!companyWhatsapp) {
+        alert("WhatsApp sipariş hattı bilgisi bulunamadı.");
+        return;
+      }
+      const orderMessage = getOrderMessage();
+      // Telefon numarasındaki '+' karakterini kaldırıyoruz
+      const phone = companyWhatsapp.replace("+", "");
+      const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(orderMessage);
+      window.open(whatsappUrl, "_blank");
+    });
+
+    // Firma Bilgilerini Firebase’den Yükleyen Fonksiyon (WhatsApp hattı ve diğer bilgileri)
+    function loadCompanyInfo() {
+      database.ref('CompanyInfo').once('value').then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // Eğer veritabanında "whatsapp" alanı var ise global değişkene aktaralım.
+          companyWhatsapp = data.whatsapp || "";
+        }
+      }).catch(error => {
+        console.error("Firma bilgileri yüklenirken hata:", error);
+      });
+    }
+
+    // Sayfa yüklendiğinde sepet ve firma bilgilerini yükleyelim.
+    window.onload = function() {
+      loadCart();
+      loadCompanyInfo();
+    };
+  </script>
 </body>
 </html>

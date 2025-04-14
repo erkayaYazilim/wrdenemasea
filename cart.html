@@ -352,6 +352,10 @@
     // Sipariş mesajını oluşturacak fonksiyon
     function getOrderMessage() {
       let message = "Sipariş Detayları:\n\n";
+      const masaNo = getMasaNo();
+      if (masaNo) {
+        message += "MASA " + masaNo + " DEN sipariş veriyorum.\n\n";
+      }
       let total = 0;
       cart.forEach((item, index) => {
         const variantPrice = item.variantPrice || 0;
@@ -365,11 +369,7 @@
       });
       message += `Genel Toplam: ₺${total.toFixed(2)}\n\n`;
       
-      // Masa numarasını ekleyelim
-      const masaNo = getMasaNo();
-      if (masaNo) {
-        message += "MASA " + masaNo + " DEN sipariş veriyorum.\n\n";
-      }
+
       
       const now = new Date();
       message += "Sipariş Tarihi: " + now.toLocaleString() + "\n\n";

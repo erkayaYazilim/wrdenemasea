@@ -443,7 +443,7 @@
         <a href="#" target="_blank" id="facebookIcon"><i class="fab fa-facebook"></i></a>
         <a href="#" target="_blank" id="instagramIcon"><i class="fab fa-instagram"></i></a>
       </div>
-      <p id="footerText">QrMenu bir <strong>ERKAYASOFT</strong> hizmetidir</p>
+      <p id="footerText">QREVA 3 bir <strong>ERKAYASOFT</strong> hizmetidir</p>
     </footer>
   </div>
 
@@ -455,6 +455,7 @@
       <p id="wifiPasswordText"></p>
     </div>
   </div>
+  
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -525,6 +526,48 @@
           document.getElementById("wifiModal").style.display = "none";
         }
       });
+      // Paylaş butonuna tıklandığında çalışacak paylaşma fonksiyonu
+document.getElementById("shareIcon").addEventListener("click", function() {
+  if (navigator.share) {
+    // Web Share API destekliyorsa, site bilgilerini paylaş
+    navigator.share({
+      title: document.title,
+      text: "Siteyi inceleyin: " + document.title,
+      url: window.location.href
+    })
+    .then(() => console.log("Paylaşma başarılı"))
+    .catch((error) => console.error("Paylaşma sırasında hata oluştu:", error));
+  } else {
+    // Web Share API desteklenmiyorsa, URL'yi panoya kopyala ve kullanıcıyı bilgilendir
+    copyToClipboard(window.location.href);
+    alert("Tarayıcınız paylaşma API'sini desteklemiyor. Site URL'si panoya kopyalandı.");
+  }
+});
+
+// URL'yi panoya kopyalayan yardımcı fonksiyon
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => console.log("URL panoya kopyalandı."))
+      .catch((error) => console.error("URL kopyalanırken hata oluştu:", error));
+  } else {
+    // Eski tarayıcılar için fallback
+    let textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";  // Görünmez konumlandırma
+    textArea.style.top = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      console.log("URL panoya kopyalandı.");
+    } catch (err) {
+      console.error("URL kopyalama başarısız oldu:", err);
+    }
+    document.body.removeChild(textArea);
+  }
+}
 
       // Kategoriler (sadece aktif olanlar)
       function fetchCategories() {

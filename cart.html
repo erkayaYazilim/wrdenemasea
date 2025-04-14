@@ -260,13 +260,13 @@
       appId: "1:1050979828232:web:54d81e21056193bee147bd",
       measurementId: "G-C3S611TREX"
     };
-    // Firebase initialize edilmelidir
+    // Firebase başlatılıyor
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Sepet İşlemleri
+    // Sepet işlemleri
     let cart = [];
-    // Firma bilgilerini tutacak global değişken (WhatsApp sipariş hattı, +90 formatında)
+    // Firma bilgilerini tutan global değişken (WhatsApp sipariş hattı, +90 formatında)
     let companyWhatsapp = ""; 
 
     function loadCart() {
@@ -378,7 +378,7 @@
       return message;
     }
 
-    // WhatsApp Sipariş Butonu Olayı
+    // WhatsApp Sipariş Butonu Olayı: Tıklayınca masa numarası kontrolü yapar.
     document.getElementById("whatsappOrderBtn").addEventListener("click", function() {
       if (cart.length === 0) {
         alert("Sepetiniz boş.");
@@ -388,19 +388,23 @@
         alert("WhatsApp sipariş hattı bilgisi bulunamadı.");
         return;
       }
+      // Masa numarası yoksa modal dialog göster
+      if (!getMasaNo()) {
+        document.getElementById("modal").classList.add("show");
+        return;
+      }
+      // Masa numarası varsa sipariş mesajını oluştur ve WhatsApp'a yönlendir.
       const orderMessage = getOrderMessage();
-      // Telefon numarasındaki '+' karakterini kaldırıyoruz
       const phone = companyWhatsapp.replace("+", "");
       const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(orderMessage);
       window.open(whatsappUrl, "_blank");
     });
 
-    // Firma Bilgilerini Firebase’den Yükleyen Fonksiyon (WhatsApp hattı ve diğer bilgileri)
+    // Firma Bilgilerini Firebase’den yükleyen fonksiyon
     function loadCompanyInfo() {
       database.ref('CompanyInfo').once('value').then(snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          // Eğer veritabanında "whatsapp" alanı var ise global değişkene aktaralım.
           companyWhatsapp = data.whatsapp || "";
         }
       }).catch(error => {
@@ -408,23 +412,15 @@
       });
     }
 
-    // Modal gösterimi: Eğer masa numarası belirlenemiyorsa, modalı göster.
-    function checkMasa() {
-      if (!getMasaNo()) {
-        document.getElementById("modal").classList.add("show");
-      }
-    }
-
     // Modal Kapatma Butonu
     document.getElementById("closeModalButton").addEventListener("click", function() {
       document.getElementById("modal").classList.remove("show");
     });
 
-    // Sayfa yüklendiğinde sepet, firma bilgileri ve masa kontrolü yapılır.
+    // Sayfa yüklendiğinde sepet ve firma bilgilerini yükleyelim.
     window.onload = function() {
       loadCart();
       loadCompanyInfo();
-      checkMasa();
     };
   </script>
 </body>

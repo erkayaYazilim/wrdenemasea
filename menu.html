@@ -474,6 +474,8 @@
         appId: "1:1050979828232:web:54d81e21056193bee147bd",
         measurementId: "G-C3S611TREX"
       };
+
+      let companyWhatsapp = "+905xxxxxxxxx";
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
 
@@ -492,25 +494,31 @@
 
       // Firma bilgileri, footer verilerini yükleyip sosyal medya linklerini ve Wi‑Fi şifresini ayarlar
       function loadFooterData() {
-        db.ref("CompanyInfo").once("value")
-          .then(snapshot => {
-            if (snapshot.exists()) {
-              const data = snapshot.val();
-              // Sosyal medya linkleri (HTML'de id isimleriyle eşleştirin)
-              document.getElementById("googleMapIcon").href = data.googleMaps || "#";
-              document.getElementById("youtubeIcon").href = data.youtube || "#";
-              document.getElementById("facebookIcon").href = data.facebook || "#";
-              document.getElementById("instagramIcon").href = data.instagram || "#";
-              // WiFi şifresi: veri tabanından çekilen 'wifi' alanı
-              const wifiPass = data.wifi ? data.wifi : "Wi‑Fi bilgisi mevcut değil";
-              // WiFi ikonuna tıklandığında modal ile göster
-              document.getElementById("wifiIcon").addEventListener("click", function() {
-                showWifiModal(wifiPass);
-              });
-            }
-          })
-          .catch(error => console.error("Firma bilgileri yüklenirken hata:", error));
+  db.ref("CompanyInfo").once("value")
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Sosyal medya linkleri ayarı...
+        document.getElementById("googleMapIcon").href = data.googleMaps || "#";
+        document.getElementById("youtubeIcon").href = data.youtube || "#";
+        document.getElementById("facebookIcon").href = data.facebook || "#";
+        document.getElementById("instagramIcon").href = data.instagram || "#";
+        
+        // WiFi şifresi ayarı
+        const wifiPass = data.wifi ? data.wifi : "Wi‑Fi bilgisi mevcut değil";
+        document.getElementById("wifiIcon").addEventListener("click", function() {
+          showWifiModal(wifiPass);
+        });
+        
+        // Eğer Firebase üzerinden WhatsApp numarası geliyorsa, companyWhatsapp'ı güncelle
+        if (data.whatsapp) {
+          companyWhatsapp = data.whatsapp;
+        }
       }
+    })
+    .catch(error => console.error("Firma bilgileri yüklenirken hata:", error));
+}
+
       loadFooterData();
 
       // WiFi modal gösterme fonksiyonu
@@ -570,7 +578,7 @@ function copyToClipboard(text) {
 }
 // Örnek: Global değişken (firma WhatsApp hattı) zaten tanımlanmış olmalı. 
 // Eğer tanımlı değilse, aşağıdaki gibi bir yedek değer kullanabilirsiniz.
-let companyWhatsapp = "+905xxxxxxxxx";
+
 
 function getMasaNo() {
   // Masa numarası sessionStorage veya localStorage'dan çekilir.
@@ -584,19 +592,18 @@ function getMasaNo() {
 function sendWhatsAppMessage(requestType) {
   const masaNo = getMasaNo();
   if (!masaNo) {
-    // Masa numarası yoksa, modal dialog’da uyarı gösteriliyor
+    // Masa numarası yoksa, uyarı göster.
     document.getElementById("wifiPasswordText").textContent = "Lütfen masadan QR kod okutunuz";
     document.getElementById("wifiModal").style.display = "block";
     return;
   }
   
-  // WhatsApp numarası kontrolü
+  // Eğer companyWhatsapp boşsa, hata mesajı ver.
   if (!companyWhatsapp) {
     alert("Şu anda WhatsApp hattı bilgisi mevcut değil. Lütfen daha sonra tekrar deneyiniz.");
     return;
   }
   
-  // İstek türüne göre mesaj belirleniyor
   let message = "";
   if (requestType === "waiter") {
     message = "MASA " + masaNo + " - Garson çağırıyorum.";
@@ -604,22 +611,14 @@ function sendWhatsAppMessage(requestType) {
     message = "MASA " + masaNo + " - Hesap rica ediyorum.";
   }
   
-  // '+' karakterini temizleyip URL oluşturuluyor
   const phone = companyWhatsapp.replace("+", "");
   const whatsappUrl = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
   
-  // Yeni sekmede WhatsApp'a yönlendir
   window.open(whatsappUrl, "_blank");
 }
 
 
-// Butonlara tıklama olaylarını bağla
-document.querySelector(".waiter-btn").addEventListener("click", function() {
-  sendWhatsAppMessage("waiter");
-});
-document.querySelector(".bill-btn").addEventListener("click", function() {
-  sendWhatsAppMessage("bill");
-});
+
 
       // Kategoriler (sadece aktif olanlar)
       function fetchCategories() {
@@ -643,7 +642,12 @@ document.querySelector(".bill-btn").addEventListener("click", function() {
         });
       }
       fetchCategories();
-
+      document.querySelector(".waiter-btn").addEventListener("click", function() {
+  sendWhatsAppMessage("waiter");
+});
+document.querySelector(".bill-btn").addEventListener("click", function() {
+  sendWhatsAppMessage("bill");
+});
       // Ürünleri çekip allProducts dizisine atar (arama için)
       function fetchAllProducts() {
         allProducts = [];

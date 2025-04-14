@@ -19,7 +19,7 @@
     
     body {
       font-family: 'Montserrat', sans-serif;
-      background-color: #383545; /* Koyu arka plan */
+      background-color: #383545;
       color: #fff;
       min-height: 100vh;
       display: flex;
@@ -28,7 +28,6 @@
       padding: 20px;
     }
     
-    /* Ana içerik kapsayıcısı */
     .container {
       text-align: center;
       max-width: 600px;
@@ -36,15 +35,14 @@
       padding: 20px;
     }
     
-    /* Logoyu yatay göstermeye uygun hale getiriyoruz */
     .logo-container {
       max-width: 100%;
       margin: 0 auto 20px;
     }
     .logo-container img {
       width: 100%;
-      height: auto; /* Orijinal en-boy oranı korunur, kırpma olmaz */
-      object-fit: contain; /* Resmin tamamı görünür, gerekiyorsa boşluklar oluşur */
+      height: auto;
+      object-fit: contain;
       border-radius: 10px;
       background-color: #ddd;
       border: 1px solid #ddd;
@@ -52,11 +50,10 @@
       transition: all 0.4s ease;
     }
     
-    /* Başlıklar, alt başlık ve hoş geldiniz mesajı */
     #main-title {
       font-size: 2rem;
       margin-bottom: 10px;
-      color: #e53e3e; /* Kırmızı ton */
+      color: #e53e3e;
     }
     #sub-title {
       font-size: 1.3rem;
@@ -69,7 +66,6 @@
       font-size: 1.1rem;
     }
     
-    /* Menü butonu */
     .menu-button {
       background-color: #e53e3e;
       color: #fff;
@@ -84,7 +80,6 @@
       background-color: #c53030;
     }
     
-    /* Responsive ayarlar */
     @media (max-width: 480px) {
       #main-title {
         font-size: 1.8rem;
@@ -101,7 +96,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Logo alanı -->
     <div class="logo-container">
       <img src="sinanusta.png" alt="Restoran Logosu">
     </div>
@@ -112,7 +106,18 @@
   </div>
   
   <script>
-    // "Menüye Git" butonuna tıklayınca menu.html sayfasına yönlendirir.
+    // URL’deki "masa" parametresini yakala
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const masa = urlParams.get('masa');
+    
+    // Eğer masa parametresi varsa sessionStorage'a kaydet
+    if (masa) {
+      sessionStorage.setItem('masa', masa);
+      console.log("Masa numarası tespit edildi:", masa);
+    }
+    
+    // "Menüye Git" butonuna tıklayınca menu.html'e yönlendir
     document.getElementById("menu-btn").addEventListener("click", function() {
       window.location.href = "menu.html";
     });
